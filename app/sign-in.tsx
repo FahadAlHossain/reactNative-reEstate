@@ -11,13 +11,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
 import icons from "@/constants/icons";
 import { login } from "@/lib/appwrite";
+import { useGlobalContext } from "@/lib/global-provider";
+import { Redirect } from "expo-router";
 
 const SignIn = () => {
+  const {refetch, loading, isLogged} = useGlobalContext();
+
   const handleLogin = async () => {
     const result = await login();
 
+    if(!loading && isLogged) return <Redirect href="/"></Redirect>
+
     if (result) {
-      console.log("Login Successful");
+      refetch();
     } else {
       Alert.alert("Error", "Failed to login");
     }
@@ -44,7 +50,7 @@ const SignIn = () => {
           </Text>
           <TouchableOpacity
             onPress={handleLogin}
-            className="bg-white shadow-md shadow-zinc-300 rounded-full w-full py-4 mt-5"
+            className="bg-blue-100 shadow-lg shadow-zinc-400 rounded-full w-full py-4 mt-5"
           >
             <View className="flex flex-row justify-center items-center">
               <Image
@@ -52,7 +58,7 @@ const SignIn = () => {
                 className="w-5 h-5"
                 resizeMode="contain"
               ></Image>
-              <Text className="text-lg font-rubik-medium text-black-300 ml-2">
+              <Text className="text-lg font-rubik-medium text-black ml-2">
                 Continue with Google
               </Text>
             </View>

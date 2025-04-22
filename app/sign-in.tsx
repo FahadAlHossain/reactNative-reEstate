@@ -1,11 +1,27 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
 import icons from "@/constants/icons";
+import { login } from "@/lib/appwrite";
 
 const SignIn = () => {
-  const handleLogin = () => {};
+  const handleLogin = async () => {
+    const result = await login();
+
+    if (result) {
+      console.log("Login Successful");
+    } else {
+      Alert.alert("Error", "Failed to login");
+    }
+  };
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerClassName="h-full">
@@ -36,7 +52,9 @@ const SignIn = () => {
                 className="w-5 h-5"
                 resizeMode="contain"
               ></Image>
-              <Text className="text-lg font-rubik-medium text-black-300 ml-2">Continue with Google</Text>
+              <Text className="text-lg font-rubik-medium text-black-300 ml-2">
+                Continue with Google
+              </Text>
             </View>
           </TouchableOpacity>
         </View>

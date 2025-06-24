@@ -9,6 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { getCurrentUser, bookProperty, isPropertyBooked } from "@/lib/appwrite";
 
 import icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -17,6 +18,7 @@ import { facilities } from "@/constants/data";
 
 import { useAppwrite } from "@/lib/useAppWrite";
 import { getPropertyById } from "@/lib/appwrite";
+import { useEffect, useState } from "react";
 
 const Property = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -29,6 +31,35 @@ const Property = () => {
       id: id!,
     },
   });
+
+  const handleBooking = async () => {
+    const user = await getCurrentUser();
+    if (!user) return alert("Please login to book");
+
+    const result = await bookProperty({ userId: user.$id, propertyId: id! });
+    if (result) {
+      alert("✅ Property booked successfully!");
+    } else {
+      alert("❌ Booking failed.");
+    }
+  };
+
+  const [alreadyBooked, setAlreadyBooked] = useState(false);
+
+  useEffect(() => {
+    const checkBooking = async () => {
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const booked = await isPropertyBooked({
+        userId: user.$id,
+        propertyId: id!,
+      });
+      setAlreadyBooked(booked);
+    };
+
+    checkBooking();
+  }, []);
 
   return (
     <View>
@@ -268,9 +299,15 @@ const Property = () => {
             </Text>
           </View>
 
-          <TouchableOpacity className="flex-1 flex flex-row items-center justify-center bg-primary-300 py-3 rounded-full shadow-md shadow-zinc-400">
-            <Text className="text-white text-lg text-center font-rubik-bold">
-              Book Now
+          <TouchableOpacity
+            disabled={alreadyBooked}
+            onPress={handleBooking}
+            className={`flex-1 flex items-center justify-center py-3 rounded-full shadow-md ${
+              alreadyBooked ? "bg-gray-400" : "bg-primary-300"
+            }`}
+          >
+            <Text className="text-white text-lg font-rubik-bold">
+              {alreadyBooked ? "Already Booked" : "Book Now"}
             </Text>
           </TouchableOpacity>
         </View>

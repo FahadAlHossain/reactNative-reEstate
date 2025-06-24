@@ -14,6 +14,7 @@ import { useGlobalContext } from "@/lib/global-provider";
 
 import icons from "@/constants/icons";
 import { settings } from "@/constants/data";
+import { useRouter } from "expo-router";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -47,6 +48,7 @@ const SettingsItem = ({
 
 const Profile = () => {
   const { user, refetch } = useGlobalContext();
+  const router = useRouter();
 
   const handleLogout = async () => {
     const result = await logout();
@@ -84,7 +86,13 @@ const Profile = () => {
         </View>
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="My Bookings" />
+          <SettingsItem
+            icon={icons.calendar}
+            title="My Bookings"
+            onPress={() => router.push("/(root)/my-bookings")}
+          />
+
+          {/* <SettingsItem icon={icons.wallet} title="Payments" /> */}
           <SettingsItem icon={icons.wallet} title="Payments" />
         </View>
 
